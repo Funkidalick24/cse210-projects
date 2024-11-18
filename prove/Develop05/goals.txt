@@ -1,0 +1,3 @@
+simple|[]|Fart King|Fart for 3 seconds straight|10
+eternal|[]|Door knocker supreme|Kick the door|20
+checklist|0|4|Donut King|Master blender guru's donut thingy|10
