@@ -48,4 +48,14 @@ public class Journal
             Entries.Add(entry);
         }
     }
+
+    public bool RemoveEntry(int index)
+    {
+        if (index >= 0 && index < Entries.Count)
+        {
+            Entries.RemoveAt(index);
+            return true;
+        }
+        return false;
+    }
 }
