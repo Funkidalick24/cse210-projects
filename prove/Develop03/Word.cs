@@ -1,45 +1,28 @@
-public class Word
+public class Word(string text)
 {
-    private string _text;
-    private string _initText;
+    private readonly string _text = text;
     private bool _isHidden;
 
-    public Word(string text)
+    public bool IsHidden()
     {
-        _initText = text;
-        _text = _initText;
+        return _isHidden;
     }
 
 
     public void Hide()
     {
-        foreach (char letter in _text)
-        {
-            _text = _text.Replace(letter, '_');
-        }        
+        _isHidden = true;
     }
 
-    public void Show()
-    {
-        _text = _initText;
-    }
-
-    public bool IsHidden()
-    {
-        if (_text.StartsWith("_"))
-        {
-            _isHidden = true;
-        }
-        else
-        {
-            _isHidden = false;
-        }
-
-        return _isHidden;
-    }
 
     public string GetDisplayText()
     {
+        return _isHidden ? new string('_', _text.Length) : _text;
+    }
+
+    public string GetText()
+    {
         return _text;
     }
+
 }

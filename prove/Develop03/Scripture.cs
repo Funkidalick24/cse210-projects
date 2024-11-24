@@ -1,85 +1,64 @@
-public class Scripture
+public class Scripture(Reference reference, string text)
 {
-    private Reference _reference;
-    private List<Word> _words = new List<Word>();
-
-    public Scripture(Reference Reference, string text)
-    {
-        _reference = Reference;
-        string[] split = text.Split(" ");
-
-        foreach (string str in split)
-        {
-            Word word = new Word(str);
-            _words.Add(word);
-        }
-    }
+    private readonly Reference _reference = reference;
+    private readonly List<Word> _words = text.Split(' ').Select(word => new Word(word)).ToList();
+    private readonly Random _random = new();
+    private int _attempts;
+    private DateTime _startTime;
 
     public void HideRandomWords(int numberToHide)
     {
-        Random random = new Random();
+        _attempts++;
+        List<Word> visibleWords = _words.Where(w => !w.IsHidden()).ToList();
 
-        for (int i = 0; i < numberToHide; i++)
+        for (int i = 0; i < numberToHide && visibleWords.Count > 0; i++)
         {
-            int indx;
-            indx = random.Next(_words.Count);
-            if (IsCompletelyHidden())
-            {
-                break;
-            }
-            else if (_words[indx].IsHidden())
-            {
-                do
-                {
-                    if (IsCompletelyHidden())
-                    {
-                        break;
-                    }
-
-                    indx = random.Next(_words.Count);
-                } while (_words[indx].IsHidden());
-
-                _words[indx].Hide();
-            }
-            else if (_words[indx].IsHidden() == false)
-            {
-                _words[indx].Hide();
-            }
+            int index = _random.Next(visibleWords.Count);
+            visibleWords[index].Hide();
+            visibleWords.RemoveAt(index);
         }
-    }
-
-    public string GetDisplayText()
-    {
-        string text = "";
-
-        foreach (Word word in _words)
-        {
-            text += $" {word.GetDisplayText()}";
-        }
-
-        string scripture = $"{_reference.GetDisplayText()}{text}";
-        Console.WriteLine(scripture);
-
-        return scripture;
     }
 
     public bool IsCompletelyHidden()
     {
-        bool isCompletelyHidden = false;
+        return _words.All(w => w.IsHidden());
+    }
 
-        foreach (Word word in _words)
+    public string GetDisplayText()
+    {
+        return $"{_reference.GetDisplayText()} {string.Join(" ", _words.Select(w => w.GetDisplayText()))}";
+    }
+
+    public string GetHintText()
+    {
+        return $"{_reference.GetDisplayText()}\n" + string.Join(" ", _words.Select(w => w.GetText()[0] + new string('.', w.GetText().Length - 1)));
+    }
+
+    public void HideEveryNthWord(int n)
+    {
+        for (int i = n - 1; i < _words.Count; i += n)
         {
-            if (word.IsHidden())
-            {
-                isCompletelyHidden = true;
-            }
-            else
-            {
-                isCompletelyHidden = false;
-                break;
-            }
+            _words[i].Hide();
         }
+    }
 
-        return isCompletelyHidden;
+    public void HideWordsByLength(int minLength)
+    {
+        foreach (Word word in _words.Where(w => !w.IsHidden() && w.GetText().Length >= minLength))
+        {
+            word.Hide();
+        }
+    }
+
+    public void StartTracking()
+    {
+        _attempts = 0;
+        _startTime = DateTime.Now;
+    }
+
+    public string GetStats()
+    {
+        TimeSpan duration = DateTime.Now - _startTime;
+        return $"\nStatistics:\nAttempts: {_attempts}\nTime spent: {duration.Minutes}m {duration.Seconds}s";
     }
 }
