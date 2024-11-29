@@ -1,9 +1,12 @@
-using System;
-
-class Program
+public class Program
 {
-    static void Main(string[] args)
+    public static void Main()
     {
-        Console.WriteLine("Hello Foundation1 World!");
+        List<Video> videos = Video.CreateSampleVideos();
+
+        foreach (Video video in videos)
+        {
+            video.DisplayDetails();
+        }
     }
 }
